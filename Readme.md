@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Дмитрий Чеканов](https://up.htmlacademy.ru/javascript/6/user/115748).
-* Наставник: `Неизвестно`.
+* Наставник: Вадим Федоров.
 
 ---
 
