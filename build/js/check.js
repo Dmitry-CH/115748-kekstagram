@@ -4,32 +4,9 @@ function getMessage(a, b) {
 
   var result;
 
-  if (typeof a === 'boolean' && b !== undefined) {
-    result = 'Переданное GIF-изображение анимировано и содержит ' + b + ' кадров';
-  }else {
-    result = 'Переданное GIF-изображение не анимировано';
-  };
-
-  if (typeof a === 'number') {
-    result = 'Переданное SVG-изображение содержит ' + a + ' объектов и ' + (b * 4) + ' атрибутов';
-  };
-
-  if (Array.isArray(a)) {
-    var amountOfRedPoints = sumArray(a);
-
-    result = 'Количество красных точек во всех строчках изображения: ' + amountOfRedPoints;
-  };
-
-  if (Array.isArray(a) && Array.isArray(b)) {
-    var artifactsSquare = sumArray(a, b);
-
-    result = 'Общая площадь артефактов сжатия: ' + artifactsSquare + ' пикселей';
-  };
-
-  return result;
-
-  //
-  // Вспомогательная функция
+  /**
+   * Вспомогательная функция
+   */
 
   function sumArray(arr1, arr2) {
 
@@ -60,4 +37,30 @@ function getMessage(a, b) {
 
     return allSum;
   };
+
+  // Определяем тип изображения
+
+  if (typeof a === 'boolean' && b !== undefined) {
+    result = 'Переданное GIF-изображение анимировано и содержит ' + b + ' кадров';
+  }else {
+    result = 'Переданное GIF-изображение не анимировано';
+  };
+
+  if (typeof a === 'number') {
+    result = 'Переданное SVG-изображение содержит ' + a + ' объектов и ' + (b * 4) + ' атрибутов';
+  };
+
+  if (Array.isArray(a)) {
+    var amountOfRedPoints = sumArray(a);
+
+    result = 'Количество красных точек во всех строчках изображения: ' + amountOfRedPoints;
+  };
+
+  if (Array.isArray(a) && Array.isArray(b)) {
+    var artifactsSquare = sumArray(a, b);
+
+    result = 'Общая площадь артефактов сжатия: ' + artifactsSquare + ' пикселей';
+  };
+
+  return result;
 };
