@@ -77,6 +77,64 @@
     _resizeConstraint: null,
 
     /**
+     * Параметры линии
+     */
+    settingsLine: function(typeLine, colorLine) {
+      switch (typeLine) {
+        case 'round':
+          this._ctx.fillStyle = colorLine;
+          break;
+
+        default:
+          this._ctx.lineWidth = 6;
+          // Цвет обводки.
+          this._ctx.strokeStyle = colorLine;
+          // Размер штрихов. Первый элемент массива задает длину штриха, второй
+          // расстояние между соседними штрихами.
+          this._ctx.setLineDash([15, 10]);
+          // Смещение первого штриха от начала линии.
+          this._ctx.lineDashOffset = 7;
+      }
+    },
+
+    /**
+     * Отрисовка заполненной цветом внешней области кадрирования
+     */
+    drawСrop: function(colorCrop) {
+      this._ctx.fillStyle = colorCrop;
+      this._ctx.beginPath();
+      this._ctx.moveTo(-this._container.width / 2, -this._container.height / 2);
+      this._ctx.lineTo(this._container.width / 2, -this._container.height / 2);
+      this._ctx.lineTo(this._container.width, this._container.height);
+      this._ctx.lineTo(-this._container.width, this._container.height);
+      this._ctx.closePath();
+
+      this._ctx.moveTo((-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+                       (-this._resizeConstraint.side / 2) - this._ctx.lineWidth);
+      this._ctx.lineTo((this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+                       (-this._resizeConstraint.side / 2) - this._ctx.lineWidth);
+      this._ctx.lineTo((this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+                       (this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2);
+      this._ctx.lineTo((-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+                       (this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2);
+      this._ctx.closePath();
+      this._ctx.fill('evenodd');
+    },
+
+    /**
+     * Задаем настройки текста
+     * для вывода размера изображения
+     */
+    outputImageSize: function(colorText, sizeText) {
+      this._ctx.fillStyle = colorText;
+      this._ctx.font = sizeText + ' Arial';
+      this._ctx.textAlign = 'center';
+      this._ctx.textBaseline = 'middle';
+      this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalHeight, 0,
+                        (-this._container.height / 2) + ((this._container.height / 2 - this._resizeConstraint.side / 2) / 2));
+    },
+
+    /**
      * Отрисовка канваса.
      */
     redraw: function() {
@@ -87,16 +145,7 @@
       // NB! Такие параметры сохраняются на время всего процесса отрисовки
       // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
       // чего-либо с другой обводкой.
-
-      // Толщина линии.
-      this._ctx.lineWidth = 6;
-      // Цвет обводки.
-      this._ctx.strokeStyle = '#ffe753';
-      // Размер штрихов. Первый элемент массива задает длину штриха, второй
-      // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
-      // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+      this.settingsLine('roun', '#ffe753');
 
       // Сохранение состояния канваса.
       this._ctx.save();
@@ -119,33 +168,9 @@
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
 
-      // Отрисовка заполненной цветом внешней области кадрирования
-      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-      this._ctx.beginPath();
-      this._ctx.moveTo(-this._container.width / 2, -this._container.height / 2);
-      this._ctx.lineTo(this._container.width / 2, -this._container.height / 2);
-      this._ctx.lineTo(this._container.width, this._container.height);
-      this._ctx.lineTo(-this._container.width, this._container.height);
-      this._ctx.closePath();
+      this.drawСrop('rgba(0, 0, 0, 0.8)');
 
-      this._ctx.moveTo((-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
-                       (-this._resizeConstraint.side / 2) - this._ctx.lineWidth);
-      this._ctx.lineTo((this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-                       (-this._resizeConstraint.side / 2) - this._ctx.lineWidth);
-      this._ctx.lineTo((this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-                       (this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2);
-      this._ctx.lineTo((-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
-                       (this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2);
-      this._ctx.closePath();
-      this._ctx.fill('evenodd');
-
-      // Задаем настройки текста для вывода размера изображения
-      this._ctx.fillStyle = '#ffffff';
-      this._ctx.font = '16px Arial';
-      this._ctx.textAlign = 'center';
-      this._ctx.textBaseline = 'middle';
-      this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalHeight, 0,
-                        (-this._container.height / 2) + ((this._container.height / 2 - this._resizeConstraint.side / 2) / 2));
+      this.outputImageSize('#ffffff', '16px');
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
