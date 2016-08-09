@@ -77,50 +77,90 @@
     _resizeConstraint: null,
 
     /**
-     * Отрисовка канваса.
+     * Параметры линии
      */
-    redraw: function() {
-      // Очистка изображения.
-      this._ctx.clearRect(0, 0, this._container.width, this._container.height);
+    drawSelectArea: function(typeLine, colorLine) {
+      switch (typeLine) {
+        case 'round':
+          this._ctx.beginPath();
 
-      // Параметры линии.
-      // NB! Такие параметры сохраняются на время всего процесса отрисовки
-      // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
-      // чего-либо с другой обводкой.
+          // Количество точек
+          var quantity = Math.round(this._resizeConstraint.side / 10);
+          // Радиус точки
+          var radius = 3;
 
-      // Толщина линии.
-      this._ctx.lineWidth = 6;
-      // Цвет обводки.
-      this._ctx.strokeStyle = '#ffe753';
-      // Размер штрихов. Первый элемент массива задает длину штриха, второй
-      // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
-      // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+          var xLine = (this._resizeConstraint.side / quantity - radius) + (radius - (radius * 2 / quantity));
 
-      // Сохранение состояния канваса.
-      this._ctx.save();
+          var alignX = 0;
+          var alignY = 0;
 
-      // Установка начальной точки системы координат в центр холста.
-      this._ctx.translate(this._container.width / 2, this._container.height / 2);
+          // Цикл расположения по четырем сторонам
+          for (var i = 0; i < 4; i++) {
+            // Top
+            if (i === 0) {
+              alignX = -this._resizeConstraint.side / 2;
 
-      var displX = -(this._resizeConstraint.x + this._resizeConstraint.side / 2);
-      var displY = -(this._resizeConstraint.y + this._resizeConstraint.side / 2);
-      // Отрисовка изображения на холсте. Параметры задают изображение, которое
-      // нужно отрисовать и координаты его верхнего левого угла.
-      // Координаты задаются от центра холста.
-      this._ctx.drawImage(this._image, displX, displY);
+              for (var j = 0; j < quantity; j++) {
+                this._ctx.arc(alignX + radius, (-this._resizeConstraint.side / 2) + radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignX = alignX + xLine;
+              }
+            }
 
-      // Отрисовка прямоугольника, обозначающего область изображения после
-      // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+            // Right
+            if (i === 1) {
+              alignY = -this._resizeConstraint.side / 2;
 
-      // Отрисовка заполненной цветом внешней области кадрирования
-      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+              for (j = 0; j < quantity; j++) {
+                this._ctx.arc(this._resizeConstraint.side / 2 - radius, alignY + radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignY = alignY + xLine;
+              }
+            }
+
+            // Bottom
+            if (i === 2) {
+              alignX = this._resizeConstraint.side / 2;
+
+              for (j = 0; j < quantity; j++) {
+                this._ctx.arc(alignX - radius, (this._resizeConstraint.side / 2) - radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignX = alignX - xLine;
+              }
+            }
+
+            // Left
+            if (i === 3) {
+              alignY = this._resizeConstraint.side / 2;
+
+              for (j = 0; j < quantity; j++) {
+                this._ctx.arc(-this._resizeConstraint.side / 2 + radius, alignY - radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignY = alignY - xLine;
+              }
+            }
+          }
+          this._ctx.fillStyle = colorLine;
+          this._ctx.fill();
+          break;
+
+        default:
+          this._ctx.lineWidth = 6;
+          // Цвет обводки.
+          this._ctx.strokeStyle = colorLine;
+          // Размер штрихов. Первый элемент массива задает длину штриха, второй
+          // расстояние между соседними штрихами.
+          this._ctx.setLineDash([15, 10]);
+          // Смещение первого штриха от начала линии.
+          this._ctx.lineDashOffset = 7;
+      }
+    },
+
+    /**
+     * Отрисовка заполненной цветом внешней области кадрирования
+     */
+    drawOverlay: function(colorCrop) {
+      this._ctx.fillStyle = colorCrop;
       this._ctx.beginPath();
       this._ctx.moveTo(-this._container.width / 2, -this._container.height / 2);
       this._ctx.lineTo(this._container.width / 2, -this._container.height / 2);
@@ -138,14 +178,59 @@
                        (this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2);
       this._ctx.closePath();
       this._ctx.fill('evenodd');
+    },
 
-      // Задаем настройки текста для вывода размера изображения
-      this._ctx.fillStyle = '#ffffff';
-      this._ctx.font = '16px Arial';
+    /**
+     * Задаем настройки текста
+     * для вывода размера изображения
+     */
+    drawImgSize: function(colorText, sizeText) {
+      this._ctx.fillStyle = colorText;
+      this._ctx.font = sizeText + ' Arial';
       this._ctx.textAlign = 'center';
       this._ctx.textBaseline = 'middle';
       this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalHeight, 0,
                         (-this._container.height / 2) + ((this._container.height / 2 - this._resizeConstraint.side / 2) / 2));
+    },
+
+    /**
+     * Отрисовка канваса.
+     */
+    redraw: function() {
+      // Очистка изображения.
+      this._ctx.clearRect(0, 0, this._container.width, this._container.height);
+
+      // Параметры линии.
+      // NB! Такие параметры сохраняются на время всего процесса отрисовки
+      // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
+      // чего-либо с другой обводкой.
+
+      // Сохранение состояния канваса.
+      this._ctx.save();
+
+      // Установка начальной точки системы координат в центр холста.
+      this._ctx.translate(this._container.width / 2, this._container.height / 2);
+
+      var displX = -(this._resizeConstraint.x + this._resizeConstraint.side / 2);
+      var displY = -(this._resizeConstraint.y + this._resizeConstraint.side / 2);
+      // Отрисовка изображения на холсте. Параметры задают изображение, которое
+      // нужно отрисовать и координаты его верхнего левого угла.
+      // Координаты задаются от центра холста.
+      this._ctx.drawImage(this._image, displX, displY);
+
+      // Отрисовка прямоугольника, обозначающего область изображения после
+      // кадрирования. Координаты задаются от центра.
+      this.drawSelectArea('round', '#ffe753');
+
+      this._ctx.strokeRect(
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+          this._resizeConstraint.side - this._ctx.lineWidth / 2,
+          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+
+      this.drawOverlay('rgba(0, 0, 0, 0.8)');
+
+      this.drawImgSize('#ffffff', '16px');
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
