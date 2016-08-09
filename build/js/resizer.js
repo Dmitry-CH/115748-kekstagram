@@ -82,7 +82,66 @@
     settingsLine: function(typeLine, colorLine) {
       switch (typeLine) {
         case 'round':
+          this._ctx.beginPath();
+
+          // Количество точек
+          var quantity = 24;
+          // Радиус точки
+          var radius = 3;
+
+          var xLine = (this._resizeConstraint.side / quantity - radius) + (radius - (radius * 2 / quantity));
+
+          var alignX = 0;
+          var alignY = 0;
+
+          // Цикл расположения по четырем сторонам
+          for (var i = 0; i < 4; i++) {
+            // Top
+            if (i === 0) {
+              alignX = -this._resizeConstraint.side / 2;
+
+              for (var j = 0; j < quantity; j++) {
+                this._ctx.arc(alignX + radius, (-this._resizeConstraint.side / 2) + radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignX = alignX + xLine;
+              }
+            }
+
+            // Right
+            if (i === 1) {
+              alignY = -this._resizeConstraint.side / 2;
+
+              for (j = 0; j < quantity; j++) {
+                this._ctx.arc(this._resizeConstraint.side / 2 - radius, alignY + radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignY = alignY + xLine;
+              }
+            }
+
+            // Bottom
+            if (i === 2) {
+              alignX = this._resizeConstraint.side / 2;
+
+              for (j = 0; j < quantity; j++) {
+                this._ctx.arc(alignX - radius, (this._resizeConstraint.side / 2) - radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignX = alignX - xLine;
+              }
+            }
+
+            // Left
+            if (i === 3) {
+              alignY = this._resizeConstraint.side / 2;
+
+              for (j = 0; j < quantity; j++) {
+                this._ctx.arc(-this._resizeConstraint.side / 2 + radius, alignY - radius, radius, 0, 2 * Math.PI, false);
+                this._ctx.closePath();
+                alignY = alignY - xLine;
+              }
+            }
+          }
           this._ctx.fillStyle = colorLine;
+          this._ctx.fill();
           break;
 
         default:
@@ -145,7 +204,6 @@
       // NB! Такие параметры сохраняются на время всего процесса отрисовки
       // canvas'a поэтому важно вовремя поменять их, если нужно начать отрисовку
       // чего-либо с другой обводкой.
-      this.settingsLine('roun', '#ffe753');
 
       // Сохранение состояния канваса.
       this._ctx.save();
@@ -162,6 +220,8 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
+      this.settingsLine('round', '#ffe753');
+
       this._ctx.strokeRect(
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
