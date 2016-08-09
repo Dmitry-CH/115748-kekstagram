@@ -79,13 +79,13 @@
     /**
      * Параметры линии
      */
-    settingsLine: function(typeLine, colorLine) {
+    drawSelectArea: function(typeLine, colorLine) {
       switch (typeLine) {
         case 'round':
           this._ctx.beginPath();
 
           // Количество точек
-          var quantity = 24;
+          var quantity = Math.round(this._resizeConstraint.side / 10);
           // Радиус точки
           var radius = 3;
 
@@ -159,7 +159,7 @@
     /**
      * Отрисовка заполненной цветом внешней области кадрирования
      */
-    drawСrop: function(colorCrop) {
+    drawOverlay: function(colorCrop) {
       this._ctx.fillStyle = colorCrop;
       this._ctx.beginPath();
       this._ctx.moveTo(-this._container.width / 2, -this._container.height / 2);
@@ -184,7 +184,7 @@
      * Задаем настройки текста
      * для вывода размера изображения
      */
-    outputImageSize: function(colorText, sizeText) {
+    drawImgSize: function(colorText, sizeText) {
       this._ctx.fillStyle = colorText;
       this._ctx.font = sizeText + ' Arial';
       this._ctx.textAlign = 'center';
@@ -220,7 +220,7 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this.settingsLine('round', '#ffe753');
+      this.drawSelectArea('round', '#ffe753');
 
       this._ctx.strokeRect(
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
@@ -228,9 +228,9 @@
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
 
-      this.drawСrop('rgba(0, 0, 0, 0.8)');
+      this.drawOverlay('rgba(0, 0, 0, 0.8)');
 
-      this.outputImageSize('#ffffff', '16px');
+      this.drawImgSize('#ffffff', '16px');
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
