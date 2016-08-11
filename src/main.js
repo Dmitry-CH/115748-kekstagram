@@ -1,4 +1,4 @@
 'use strict';
 
-require('./script/resizer');
-require('./script/upload');
+require('./resizer');
+require('./upload');
