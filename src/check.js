@@ -10,8 +10,8 @@ function getMessage(a, b) {
 
   function sumArray(arr1, arr2) {
 
-    var arrTrue1 = Array.isArray(arr1),
-        arrTrue2 = Array.isArray(arr2);
+    var arrTrue1 = Array.isArray(arr1);
+    var arrTrue2 = Array.isArray(arr2);
 
     var allSum = 0;
 
@@ -22,18 +22,18 @@ function getMessage(a, b) {
         for (var j = 0; j < arr2.length; j++) {
           if (i === j) {
             allSum += arr1[i] * arr2[j];
-          };
-        };
-      };
+          }
+        }
+      }
     }else if (arrTrue1) {
 
       for (i = 0; i < arr1.length; i++) {
         allSum += arr1[i];
-      };
+      }
     }else {
       alert('Не было передано ни одного массива!');
       return;
-    };
+    }
 
     return allSum;
   };
