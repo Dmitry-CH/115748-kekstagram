@@ -75,11 +75,16 @@
     var sumX = +xInput.value + +sizeInput.value <= currentResizer._image.naturalWidth;
     var sumY = +yInput.value + +sizeInput.value <= currentResizer._image.naturalHeight;
 
+    var resizeBtn = document.querySelector('#resize-fwd');
+
     if (xInput.value === '' || sizeInput.value === '' || yInput.value === '') {
+      resizeBtn.disabled = true;
       return false;
     }else if (sumX && sumY) {
+      resizeBtn.disabled = false;
       return true;
     }else {
+      resizeBtn.disabled = true;
       return false;
     }
   }
@@ -203,6 +208,8 @@
     }else if (yInput.value > maxInputY) {
       yInput.value = maxInputY;
     }
+
+    resizeFormIsValid();
   };
 
   /**
