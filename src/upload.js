@@ -72,7 +72,16 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var sumX = +xInput.value + +sizeInput.value <= currentResizer._image.naturalWidth;
+    var sumY = +yInput.value + +sizeInput.value <= currentResizer._image.naturalHeight;
+
+    if (xInput.value === '' || sizeInput.value === '' || yInput.value === '') {
+      return false;
+    }else if (sumX && sumY) {
+      return true;
+    }else {
+      return false;
+    }
   }
 
   /**
@@ -86,6 +95,11 @@
    * @type {HTMLFormElement}
    */
   var resizeForm = document.forms['upload-resize'];
+
+  // Поля формы кадрирования изображения.
+  var xInput = resizeForm.elements.x;
+  var yInput = resizeForm.elements.y;
+  var sizeInput = resizeForm.elements.size;
 
   /**
    * Форма добавления фильтра.
@@ -167,6 +181,27 @@
         // Показ сообщения об ошибке, если формат загружаемого файла не поддерживается
         showMessage(Action.ERROR);
       }
+    }
+  };
+
+  /**
+   * Обработка ввода значений в поле формы кадрирования.
+   */
+
+  resizeForm.oninput = function() {
+    var maxInputX = currentResizer._image.naturalWidth - sizeInput.value;
+    var maxInputY = currentResizer._image.naturalHeight - sizeInput.value;
+
+    if (xInput.value < 0) {
+      xInput.value = 0;
+    }else if (xInput.value > maxInputX) {
+      xInput.value = maxInputX;
+    }
+
+    if (yInput.value < 0) {
+      yInput.value = 0;
+    }else if (yInput.value > maxInputY) {
+      yInput.value = maxInputY;
     }
   };
 
