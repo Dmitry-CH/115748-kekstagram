@@ -88,7 +88,7 @@
    * Блокирует, кнопку отправки формы кадрирования.
    */
 
-  function blockingFormSubmit() {
+  function toggleFormSubmit() {
     var resizeBtn = document.querySelector('#resize-fwd');
 
     if (resizeFormIsValid()) {
@@ -188,6 +188,9 @@
           resizeForm.classList.remove('invisible');
 
           hideMessage();
+
+          // Блокируем при старте кнопку отправки формы кадрирования.
+          toggleFormSubmit();
         };
 
         fileReader.readAsDataURL(element.files[0]);
@@ -218,7 +221,7 @@
       yInput.value = maxInputY;
     }
 
-    blockingFormSubmit();
+    toggleFormSubmit();
   };
 
   /**
@@ -257,7 +260,7 @@
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
     }else {
-      blockingFormSubmit();
+      toggleFormSubmit();
     }
   };
 
