@@ -8,6 +8,8 @@
 'use strict';
 
 (function() {
+  var browserCookies = require('browser-cookies');
+
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -282,6 +284,33 @@
    */
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
+
+    var radio = filterForm.querySelectorAll('[type=radio]');
+    var typeFilter;
+
+    for (var i = 0; i < radio.length; i++) {
+      if (radio[i].checked) {
+        typeFilter = radio[i].value;
+      }
+    }
+
+    // Текущая дата.
+    var currentDate = new Date();
+    // Текущая дата, миллисекунды.
+    var msCurrentDate = currentDate.getTime();
+    // Текущий год.
+    var currentYear = currentDate.getFullYear();
+
+    // Дата последнего прошедшего дня рождения Грейс Хоппер.
+    var graceHopper = new Date(currentYear - 1, 11, 9);
+    // Дата последнего прошедшего дня рождения Грейс Хоппер, миллисекунды.
+    var msGraceHopper = graceHopper.getTime();
+
+    //
+    var endDate = new Date(msCurrentDate + (msCurrentDate - msGraceHopper));
+
+    // Записываем в cookie выбранный фильтр и дату.
+    browserCookies.set('upload-filter', typeFilter, {expires: endDate.toUTCString()});
 
     cleanupResizer();
     updateBackground();
