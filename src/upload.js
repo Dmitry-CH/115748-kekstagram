@@ -75,17 +75,26 @@
     var sumX = +xInput.value + +sizeInput.value <= currentResizer._image.naturalWidth;
     var sumY = +yInput.value + +sizeInput.value <= currentResizer._image.naturalHeight;
 
-    var resizeBtn = document.querySelector('#resize-fwd');
-
     if (xInput.value === '' || sizeInput.value === '' || yInput.value === '') {
-      resizeBtn.disabled = true;
       return false;
     }else if (sumX && sumY) {
-      resizeBtn.disabled = false;
       return true;
     }else {
-      resizeBtn.disabled = true;
       return false;
+    }
+  }
+
+  /**
+   * Блокирует, кнопку отправки формы кадрирования.
+   */
+
+  function blockingFormSubmit() {
+    var resizeBtn = document.querySelector('#resize-fwd');
+
+    if (resizeFormIsValid()) {
+      resizeBtn.disabled = false;
+    }else {
+      resizeBtn.disabled = true;
     }
   }
 
@@ -209,7 +218,7 @@
       yInput.value = maxInputY;
     }
 
-    resizeFormIsValid();
+    blockingFormSubmit();
   };
 
   /**
@@ -247,6 +256,8 @@
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
+    }else {
+      blockingFormSubmit();
     }
   };
 
