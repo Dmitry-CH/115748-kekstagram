@@ -87,7 +87,7 @@
   }
 
   /**
-   * Блокирует, кнопку отправки формы кадрирования.
+   * Активирует/Деактивирует, кнопку отправки формы кадрирования.
    */
 
   function toggleFormSubmit() {
@@ -97,6 +97,35 @@
       resizeBtn.disabled = false;
     }else {
       resizeBtn.disabled = true;
+    }
+  }
+
+  /**
+   * Задает фильтр по умолчанию из cookie.
+   */
+
+  function addFilterForm() {
+    var none = document.querySelector('#upload-filter-none');
+    var chrome = document.querySelector('#upload-filter-chrome');
+    var sepia = document.querySelector('#upload-filter-sepia');
+    var marvin = document.querySelector('#upload-filter-marvin');
+
+    switch (browserCookies.get('upload-filter')) {
+      case none.value:
+        none.checked = true;
+        break;
+
+      case chrome.value:
+        chrome.checked = true;
+        break;
+
+      case sepia.value:
+        sepia.checked = true;
+        break;
+
+      case marvin.value:
+        marvin.checked = true;
+        break;
     }
   }
 
@@ -191,7 +220,7 @@
 
           hideMessage();
 
-          // Блокируем при старте кнопку отправки формы кадрирования.
+          // Активируем/Деактивируем при старте кнопку отправки формы кадрирования.
           toggleFormSubmit();
         };
 
@@ -261,6 +290,9 @@
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
+
+      // Задать фильтр по умолчанию из cookie.
+      addFilterForm();
     }else {
       toggleFormSubmit();
     }
@@ -306,11 +338,11 @@
     // Дата последнего прошедшего дня рождения Грейс Хоппер, миллисекунды.
     var msGraceHopper = graceHopper.getTime();
 
-    //
-    var endDate = new Date(msCurrentDate + (msCurrentDate - msGraceHopper));
+    // Дата окончания хранения cookie.
+    var expDate = new Date(msCurrentDate + (msCurrentDate - msGraceHopper));
 
     // Записываем в cookie выбранный фильтр и дату.
-    browserCookies.set('upload-filter', typeFilter, {expires: endDate.toUTCString()});
+    browserCookies.set('upload-filter', typeFilter, {expires: expDate.toUTCString()});
 
     cleanupResizer();
     updateBackground();
