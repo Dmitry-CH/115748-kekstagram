@@ -8,6 +8,8 @@
 'use strict';
 
 (function() {
+  var browserCookies = require('browser-cookies');
+
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -85,7 +87,7 @@
   }
 
   /**
-   * Блокирует, кнопку отправки формы кадрирования.
+   * Активирует/Деактивирует, кнопку отправки формы кадрирования.
    */
 
   function toggleFormSubmit() {
@@ -95,6 +97,35 @@
       resizeBtn.disabled = false;
     }else {
       resizeBtn.disabled = true;
+    }
+  }
+
+  /**
+   * Задает фильтр по умолчанию из cookie.
+   */
+
+  function addFilterForm() {
+    var none = document.querySelector('#upload-filter-none');
+    var chrome = document.querySelector('#upload-filter-chrome');
+    var sepia = document.querySelector('#upload-filter-sepia');
+    var marvin = document.querySelector('#upload-filter-marvin');
+
+    switch (browserCookies.get('upload-filter')) {
+      case none.value:
+        none.checked = true;
+        break;
+
+      case chrome.value:
+        chrome.checked = true;
+        break;
+
+      case sepia.value:
+        sepia.checked = true;
+        break;
+
+      case marvin.value:
+        marvin.checked = true;
+        break;
     }
   }
 
@@ -189,7 +220,7 @@
 
           hideMessage();
 
-          // Блокируем при старте кнопку отправки формы кадрирования.
+          // Активируем/Деактивируем при старте кнопку отправки формы кадрирования.
           toggleFormSubmit();
         };
 
@@ -259,6 +290,9 @@
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
+
+      // Задать фильтр по умолчанию из cookie.
+      addFilterForm();
     }else {
       toggleFormSubmit();
     }
@@ -282,6 +316,33 @@
    */
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
+
+    var radio = filterForm.querySelectorAll('[type=radio]');
+    var typeFilter;
+
+    for (var i = 0; i < radio.length; i++) {
+      if (radio[i].checked) {
+        typeFilter = radio[i].value;
+      }
+    }
+
+    // Текущая дата.
+    var currentDate = new Date();
+    // Текущая дата, миллисекунды.
+    var msCurrentDate = currentDate.getTime();
+    // Текущий год.
+    var currentYear = currentDate.getFullYear();
+
+    // Дата последнего прошедшего дня рождения Грейс Хоппер.
+    var graceHopper = new Date(currentYear - 1, 11, 9);
+    // Дата последнего прошедшего дня рождения Грейс Хоппер, миллисекунды.
+    var msGraceHopper = graceHopper.getTime();
+
+    // Дата окончания хранения cookie.
+    var expDate = new Date(msCurrentDate + (msCurrentDate - msGraceHopper));
+
+    // Записываем в cookie выбранный фильтр и дату.
+    browserCookies.set('upload-filter', typeFilter, {expires: expDate.toUTCString()});
 
     cleanupResizer();
     updateBackground();
