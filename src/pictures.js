@@ -1,30 +1,23 @@
 'use strict';
 
 (function() {
-  var url = 'http://localhost:1506/api/pictures?callback=jsonpCallback';
+  var pictures = [];
+  var callbackName = 'jsonpCallback';
+  var url = 'http://localhost:1506/api/pictures?callback=' + callbackName;
 
-  function picturesList(list) {
-    var pictures = [];
-
-    pictures = list;
+  var savePictures = function(data) {
+    pictures = data;
     console.log(pictures);
-  }
+  };
 
-  function loadPictures(src, callback) {
-    // Функция обработки JSONP.
-    var jsonpCallback = function(data) {
-      return data;
-    };
-
+  function getJSONP(src, callback) {
+    window[callbackName] = callback;
     // Добавляем на страницу динамически созданный тег 'script'
     // с внешней ссылкой.
     var scriptEl = document.createElement('script');
     scriptEl.src = src;
     document.body.appendChild(scriptEl);
-
-    // Вызываем функцию, которая выводит в консоль полученные данные.
-    callback(jsonpCallback());
   }
 
-  loadPictures(url, picturesList);
+  getJSONP(url, savePictures);
 })();
