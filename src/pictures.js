@@ -3,61 +3,97 @@
 (function() {
   var pictures = [];
   var callbackName = 'jsonpCallback';
+
+  // Ссылка на загрузку внешних данных.
   var url = 'http://localhost:1506/api/pictures?callback=' + callbackName;
 
-  // Получаю элемент контейнер, куда буду помещать новые элементы.
+  // Получаем элемент контейнер, куда будем помещать сгенерированные элементы.
   var picturesContainer = document.querySelector('.pictures');
-  // Получаю элемент шаблон 'template'.
+  // Получаем элемент 'template'.
   var templateElement = document.querySelector('#picture-template');
-  // Переменная куда помещаю нужный элемент из шаблона.
-  var elementToClone;
+  // Переменная куда помещаем нужный элемент из шаблона.
+  var sampleElement;
 
-  // Условие проверки.
+  var IMAGE_LOAD_TIMEOUT = 10000;
+
+  // Хак для 'template'.
   if ('content' in templateElement) {
-    elementToClone = templateElement.content.querySelector('.picture');
+    sampleElement = templateElement.content.querySelector('.picture');
   }else {
-    elementToClone = templateElement.querySelector('.picture');
+    sampleElement = templateElement.querySelector('.picture');
   }
 
   /**
-   *
+   * Скрывает блок 'element'.
+   */
+
+  function hideElement() {
+    var filtersElement = document.querySelector('.filters');
+    filtersElement.classList.add('hidden');
+  }
+
+  /**
+   * Создает из шаблона новый элемент 'img'.
+   * @param {object} data
+   * @param {element} container
    */
 
   function getPictureElement(data, container) {
-    var element = elementToClone.cloneNode(true);
-    var pictureStats = element.querySelector('.picture-stats');
+    // Клонируем элемент шаблона.
+    var element = sampleElement.cloneNode(true);
 
-    var newImg = new Image(182, 182);
+    // Создаем новое изображение через конструктор.
+    var contentIMG = new Image(182, 182);
 
-    newImg.onload = function() {
-      element.insertBefore(newImg, pictureStats);
+    // Обработчик загрузки изображения.
+    contentIMG.onload = function() {
+      clearTimeout(imgLoadTimeout);
 
-      var allImg = element.querySelectorAll('img');
-      element.removeChild(allImg[0]);
+      // Заменяем текущий 'img' на новый из конструктора.
+      element.replaceChild(contentIMG, element.querySelector('img'));
     };
 
-    newImg.onerror = function() {
+    // Обработчик ошибки сервера.
+    contentIMG.onerror = function() {
       element.classList.add('picture-load-failure');
     };
 
-    newImg.src = data.url;
+    contentIMG.src = data.url;
+
+    // Обработчик длительного ожидания ответа от сервера.
+    var imgLoadTimeout = setTimeout(function() {
+      contentIMG.src = '';
+
+      element.classList.add('picture-load-failure');
+    }, IMAGE_LOAD_TIMEOUT);
 
     element.querySelector('.picture-comments').textContent = data.comments;
     element.querySelector('.picture-likes').textContent = data.likes;
     container.appendChild(element);
-
-    return element;
   }
 
   /**
-   *
+   * Выполняет обработку JSONP запросов.
+   * @param {string} url
+   * @param {function} callback
+   */
+
+  function getJSONP(src, callback) {
+    window[callbackName] = callback;
+
+    // Добавляем на страницу динамически созданный тег 'script'
+    // с внешней ссылкой.
+    var scriptEl = document.createElement('script');
+    scriptEl.src = src;
+    document.body.appendChild(scriptEl);
+  }
+
+  /**
+   * Обрабатывает полученные данные с сервера.
+   * @param {array} data
    */
 
   var renderPictures = function(data) {
-    var filtersElement = document.querySelector('.filters');
-    // Прячем блок filters, добавляя класс 'hidden'.
-    filtersElement.classList.add('hidden');
-
     // Сохраняем полученный список изображений в переменную.
     pictures = data;
 
@@ -65,20 +101,10 @@
     pictures.forEach(function(img) {
       getPictureElement(img, picturesContainer);
     });
+
+    // Скрываем блок 'filters'.
+    hideElement();
   };
-
-  /**
-   *
-   */
-
-  function getJSONP(src, callback) {
-    window[callbackName] = callback;
-    // Добавляем на страницу динамически созданный тег 'script'
-    // с внешней ссылкой.
-    var scriptEl = document.createElement('script');
-    scriptEl.src = src;
-    document.body.appendChild(scriptEl);
-  }
 
   // Выполняем JSONP запрос на сервер.
   getJSONP(url, renderPictures);
