@@ -24,12 +24,18 @@
   }
 
   /**
-   * Скрывает блок 'element'.
+   * Скрывает/показывает блок 'filters'.
+   * @param {boolean} show
    */
 
-  function hideElement() {
+  function toggleShowElement(show) {
     var filtersElement = document.querySelector('.filters');
-    filtersElement.classList.add('hidden');
+
+    if (show) {
+      filtersElement.classList.remove('hidden');
+    }else {
+      filtersElement.classList.add('hidden');
+    }
   }
 
   /**
@@ -79,6 +85,9 @@
    */
 
   function getJSONP(src, callback) {
+    // Скрываем блок 'filters'.
+    toggleShowElement(false);
+
     window[callbackName] = callback;
 
     // Добавляем на страницу динамически созданный тег 'script'
@@ -102,8 +111,8 @@
       getPictureElement(img, picturesContainer);
     });
 
-    // Скрываем блок 'filters'.
-    hideElement();
+    // Показываем блок 'filters'.
+    toggleShowElement(true);
   };
 
   // Выполняем JSONP запрос на сервер.
