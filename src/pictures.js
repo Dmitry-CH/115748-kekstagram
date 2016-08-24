@@ -9,7 +9,7 @@ var pictures = [];
 var nameCallback = 'jsonpCallback';
 
 // Ссылка на загрузку внешних данных.
-var url = 'http://localhost:1506/api/pictures?callback=' + nameCallback;
+var url = 'http://localhost:1506/api/pictures?callback=';
 
 // Получаем элемент контейнер, куда будем помещать сгенерированные элементы.
 var picturesContainer = document.querySelector('.pictures');
