@@ -13,6 +13,6 @@ module.exports = function(src, callback, callbackName) {
   // Добавляем на страницу динамически созданный тег 'script'
   // с внешней ссылкой.
   var scriptEl = document.createElement('script');
-  scriptEl.src = src + callbackName;
+  scriptEl.src = src + '?callback=' + callbackName;
   document.body.appendChild(scriptEl);
 };
