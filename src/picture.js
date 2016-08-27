@@ -1,5 +1,9 @@
 'use strict';
 
+// Подключение внешних модулей.
+//var gallery = require('./gallery');
+var utility = require('./utility');
+
 /**
  * Создает из шаблона новый элемент 'img'.
  * @param {object} data
@@ -7,9 +11,6 @@
  */
 
 module.exports = function(data, container) {
-  // Подключение внешних модулей.
-  var utility = require('./utility');
-
   // Переменная куда помещаем нужный элемент из шаблона.
   // Вызов из внешнего модуля 'utility'.
   var sampleElement = utility.checkedForTemplate();
