@@ -40,7 +40,6 @@ Gallery.prototype.show = function(number) {
 
     if (self.activePicture < self.picturesLength - 1) {
       self.setActivePicture(self.activePicture + 1);
-      console.log(self.activePicture);
     }else {
       self.setActivePicture(0);
     }
