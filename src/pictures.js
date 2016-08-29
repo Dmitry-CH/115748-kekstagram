@@ -1,6 +1,7 @@
 'use strict';
 
 // Подключение внешних модулей.
+var gallery = require('./gallery');
 var load = require('./load');
 var picture = require('./picture');
 var utility = require('./utility');
@@ -27,9 +28,12 @@ var renderPictures = function(data) {
   pictures = data;
 
   // Перебираем список изображений и применяем шаблон.
-  pictures.forEach(function(img) {
-    picture(img, picturesContainer);
+  pictures.forEach(function(img, i) {
+    picture(img, picturesContainer, i);
   });
+
+  // Передаем массив изображений.
+  gallery.setPictures(pictures);
 
   // Показываем блок 'filters'.
   utility.toggleShowElement(true);
