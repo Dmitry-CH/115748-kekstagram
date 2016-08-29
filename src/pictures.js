@@ -28,8 +28,8 @@ var renderPictures = function(data) {
   pictures = data;
 
   // Перебираем список изображений и применяем шаблон.
-  pictures.forEach(function(img) {
-    picture(img, picturesContainer);
+  pictures.forEach(function(img, i) {
+    picture(img, picturesContainer, i);
   });
 
   // Передаем массив изображений.

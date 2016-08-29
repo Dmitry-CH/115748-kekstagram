@@ -1,7 +1,7 @@
 'use strict';
 
 // Подключение внешних модулей.
-//var gallery = require('./gallery');
+var gallery = require('./gallery');
 var utility = require('./utility');
 
 /**
@@ -10,7 +10,7 @@ var utility = require('./utility');
  * @param {element} container
  */
 
-module.exports = function(data, container) {
+module.exports = function(data, container, i) {
   // Переменная куда помещаем нужный элемент из шаблона.
   // Вызов из внешнего модуля 'utility'.
   var sampleElement = utility.checkedForTemplate();
@@ -48,6 +48,16 @@ module.exports = function(data, container) {
 
     element.classList.add('picture-load-failure');
   }, IMAGE_LOAD_TIMEOUT);
+
+  // Добовляем на изображение обработчик клика.
+  element.onclick = function(evt) {
+    evt.preventDefault();
+
+    gallery.show(evt.target.parentElement.dataset.indeximg);
+  };
+
+  // Нумерую список изображений.
+  element.dataset.indeximg = i;
 
   element.querySelector('.picture-comments').textContent = data.comments;
   element.querySelector('.picture-likes').textContent = data.likes;
