@@ -3,7 +3,7 @@
 // Подключение внешних модулей.
 var gallery = require('./gallery');
 var load = require('./load');
-var picture = require('./picture');
+var Picture = require('./picture');
 var utility = require('./utility');
 
 var pictures = [];
@@ -29,7 +29,10 @@ var renderPictures = function(data) {
 
   // Перебираем список изображений и применяем шаблон.
   pictures.forEach(function(img, i) {
-    picture(img, picturesContainer, i);
+    var elementIMG = new Picture(img, i);
+
+    // Добавляем на страницу новый созданный элемент.
+    picturesContainer.appendChild(elementIMG.element);
   });
 
   // Передаем массив изображений.
