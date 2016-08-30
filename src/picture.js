@@ -5,12 +5,11 @@ var gallery = require('./gallery');
 var utility = require('./utility');
 
 /**
- * Создает из шаблона новый элемент 'img'.
- * @param {object} data
- * @param {element} container
- */
+  * Создает из шаблона DOM-элемент.
+  * @return {HTMLElement}
+  */
 
-module.exports = function(data, container, i) {
+function createElement(obj, i) {
   // Переменная куда помещаем нужный элемент из шаблона.
   // Вызов из внешнего модуля 'utility'.
   var sampleElement = utility.checkedForTemplate();
@@ -40,7 +39,7 @@ module.exports = function(data, container, i) {
     element.classList.add('picture-load-failure');
   };
 
-  contentIMG.src = data.url;
+  contentIMG.src = obj.url;
 
   // Обработчик длительного ожидания ответа от сервера.
   var imgLoadTimeout = setTimeout(function() {
@@ -49,17 +48,35 @@ module.exports = function(data, container, i) {
     element.classList.add('picture-load-failure');
   }, IMAGE_LOAD_TIMEOUT);
 
-  // Добовляем на изображение обработчик клика.
-  element.onclick = function(evt) {
-    evt.preventDefault();
-
-    gallery.show(evt.target.parentElement.dataset.indeximg);
-  };
-
   // Нумерую список изображений.
   element.dataset.indeximg = i;
 
-  element.querySelector('.picture-comments').textContent = data.comments;
-  element.querySelector('.picture-likes').textContent = data.likes;
-  container.appendChild(element);
+  element.querySelector('.picture-comments').textContent = obj.comments;
+  element.querySelector('.picture-likes').textContent = obj.likes;
+
+  return element;
+}
+
+/**
+  * Конструктор объектов 'Picture'.
+  * @param {object} data
+  */
+
+var Picture = function(data, i) {
+  this.data = data;
+  this.element = createElement(data, i);
+
+  // Добовляем на изображение обработчик клика.
+  this.element.onclick = function(evt) {
+    evt.preventDefault();
+    gallery.show(evt.target.parentElement.dataset.indeximg);
+  };
+
+  // Удаляет обработчики событий.
+  this.remove = function() {
+    this.element.onclick = null;
+  };
 };
+
+// Экспортирую из модуля конструктор.
+module.exports = Picture;
