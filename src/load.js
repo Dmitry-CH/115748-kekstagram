@@ -1,18 +1,30 @@
 'use strict';
 
 /**
- * Выполняет обработку JSONP запросов.
- * @param {string} src
+ * Выполняет обработку XMLHttpRequest запросов.
+ * @param {string} url
+ * @param {object} params
  * @param {function} callback
- * @param {string} callbackName
  */
 
-module.exports = function(src, callback, callbackName) {
-  window[callbackName] = callback;
+module.exports = function(url, params, callback) {
+  var xhr = new XMLHttpRequest();
 
-  // Добавляем на страницу динамически созданный тег 'script'
-  // с внешней ссылкой.
-  var scriptEl = document.createElement('script');
-  scriptEl.src = src + '?callback=' + callbackName;
-  document.body.appendChild(scriptEl);
+  // Задаем параметры запроса.
+  xhr.open('GET', url +
+    '?from=' + (params.from || 0) +
+    '&to=' + (params.to || 12) +
+    '&filter=' + (params.filter || 'popular')
+  );
+
+  //
+  xhr.onload = function(evt) {
+    var loadedData = evt.target.response;
+    loadedData = JSON.parse(loadedData);
+
+    callback(loadedData);
+  };
+
+  // Отсылаем запрос на сервер.
+  xhr.send();
 };

@@ -6,11 +6,23 @@ var load = require('./load');
 var Picture = require('./picture');
 var utility = require('./utility');
 
+var filters = document.querySelector('.filters');
+
 var pictures = [];
-var nameCallback = 'jsonpCallback';
+
+// Задаем базовые настройки отображения списка изображений.
+var currentPageNumber = 0;
+var pageSize = 12;
 
 // Ссылка на загрузку внешних данных.
 var url = 'http://localhost:1506/api/pictures';
+
+// Параметры GET запроса.
+var optionList = {
+  from: currentPageNumber,
+  to: pageSize,
+  filter: 'popular'
+};
 
 // Получаем элемент контейнер, куда будем помещать сгенерированные элементы.
 var picturesContainer = document.querySelector('.pictures');
@@ -42,5 +54,12 @@ var renderPictures = function(data) {
   utility.toggleShowElement(true);
 };
 
-// Выполняем JSONP запрос на сервер.
-load(url, renderPictures, nameCallback);
+// Выполняем XMLHttpRequest запрос на сервер.
+load(url, optionList, renderPictures);
+
+/**
+ * Обработчик фильтра.
+ * @param {array} data
+*/
+
+console.log(filters);
