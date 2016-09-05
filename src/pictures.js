@@ -6,26 +6,43 @@ var load = require('./load');
 var Picture = require('./picture');
 var utility = require('./utility');
 
+// Получаем элемент контейнер filters.
 var filters = document.querySelector('.filters');
-
-var pictures = [];
-
-// Задаем базовые настройки отображения списка изображений.
-var currentPageNumber = 0;
-var pageSize = 12;
-
-// Ссылка на загрузку внешних данных.
-var url = 'http://localhost:1506/api/pictures';
-
-// Параметры GET запроса.
-var optionList = {
-  from: currentPageNumber,
-  to: pageSize,
-  filter: 'popular'
-};
 
 // Получаем элемент контейнер, куда будем помещать сгенерированные элементы.
 var picturesContainer = document.querySelector('.pictures');
+
+// Получаем элемент footer.
+var footer = document.querySelector('footer');
+var footerHeight = footer.offsetHeight;
+
+var pictures = [];
+
+// Задаем базовые настройки отображения списка изображений для GET запроса.
+var pageNumber = 0;
+var pageSize = 12;
+var filterId = 'popular';
+
+/**
+ * Вызывает загрузку изображений.
+ * @param {string} filter
+ * @param {number} currentPageNumber
+*/
+
+var loadPictures = function(filter, currentPageNumber, currentpageSize) {
+  // Ссылка на загрузку внешних данных.
+  var url = 'http://localhost:1506/api/pictures';
+
+  // Параметры GET запроса.
+  var optionList = {
+    from: currentPageNumber * currentpageSize,
+    to: (currentPageNumber * currentpageSize) + currentpageSize,
+    filter: filter
+  };
+
+  // Выполняем XMLHttpRequest запрос на сервер.
+  load(url, optionList, renderPictures);
+};
 
 /**
  * Обрабатывает полученные данные с сервера.
@@ -38,6 +55,7 @@ var renderPictures = function(data) {
 
   // Сохраняем полученный список изображений в переменную.
   pictures = data;
+  //console.log(pictures);
 
   // Перебираем список изображений и применяем шаблон.
   pictures.forEach(function(img, i) {
@@ -54,12 +72,53 @@ var renderPictures = function(data) {
   utility.toggleShowElement(true);
 };
 
-// Выполняем XMLHttpRequest запрос на сервер.
-load(url, optionList, renderPictures);
-
 /**
- * Обработчик фильтра.
- * @param {array} data
+ * Перерисовывает страницу с изображениями
+ * в зависимости от выбранного фильтра.
 */
 
-console.log(filters);
+var reloadPictures = function() {
+  // Получаем список элементов в контейнере picturesContainer.
+  var allPicture = picturesContainer.querySelectorAll('.picture');
+  var lengthAllPicture = allPicture.length;
+
+  // Удаляем все элементы из контейнера picturesContainer.
+  for (var i = 0; i < lengthAllPicture; i++) {
+    picturesContainer.removeChild(allPicture[i]);
+  }
+
+  // Обнуляем номер текущей страницы.
+  pageNumber = 0;
+
+  // Выполняем XMLHttpRequest запрос на сервер.
+  loadPictures(filterId, pageNumber, pageSize);
+};
+
+/**
+ * Обработчик события change, выбор фильтра сортировки.
+*/
+
+filters.addEventListener('change', function(evt) {
+  filterId = evt.target.value;
+
+  reloadPictures();
+}, true);
+
+/**
+ * Обработчик события scroll, загрузка новых страниц.
+*/
+
+var lastCall = Date.now();
+
+window.addEventListener('scroll', function() {
+  if (Date.now() - lastCall >= 160) {
+    if (footer.getBoundingClientRect().bottom - window.innerHeight <= footerHeight) {
+      pageNumber += 1;
+      loadPictures(filterId, pageNumber, pageSize);
+    }
+
+    lastCall = Date.now();
+  }
+});
+
+loadPictures(filterId, pageNumber, pageSize);

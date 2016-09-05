@@ -17,7 +17,7 @@ module.exports = function(url, params, callback) {
     '&filter=' + (params.filter || 'popular')
   );
 
-  //
+  // Обработчик успешного выполнения запроса к серверу.
   xhr.onload = function(evt) {
     var loadedData = evt.target.response;
     loadedData = JSON.parse(loadedData);
