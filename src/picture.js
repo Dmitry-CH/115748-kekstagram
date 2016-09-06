@@ -9,7 +9,7 @@ var utility = require('./utility');
   * @return {HTMLElement}
   */
 
-function createElement(obj, i) {
+function createElement(obj) {
   // Переменная куда помещаем нужный элемент из шаблона.
   // Вызов из внешнего модуля 'utility'.
   var sampleElement = utility.checkedForTemplate();
@@ -48,9 +48,6 @@ function createElement(obj, i) {
     element.classList.add('picture-load-failure');
   }, IMAGE_LOAD_TIMEOUT);
 
-  // Нумерую список изображений.
-  element.dataset.indeximg = i;
-
   element.querySelector('.picture-comments').textContent = obj.comments;
   element.querySelector('.picture-likes').textContent = obj.likes;
 
@@ -62,9 +59,9 @@ function createElement(obj, i) {
   * @param {object} data
   */
 
-var Picture = function(data, i) {
+var Picture = function(data) {
   this.data = data;
-  this.element = createElement(data, i);
+  this.element = createElement(data);
 
   // Добовляем на изображение обработчик клика.
   this.element.onclick = function(evt) {
