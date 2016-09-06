@@ -79,6 +79,7 @@ var renderPictures = function(data) {
 
   // Сохраняем полученный список изображений в переменную.
   pictures = data;
+  console.log(pictures);
 
   // Перебираем список изображений и применяем шаблон.
   pictures.forEach(function(img) {
