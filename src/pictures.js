@@ -130,18 +130,21 @@ window.addEventListener('load', watchFooter);
 
 /**
  * Обработчик события scroll, загрузка новых страниц.
+ * Оптимизируем обработчик события scroll (throttle).
 */
 
-// Запоминаем текущее время, в мс.
-var lastCall = Date.now();
+var timeout = true;
 
 window.addEventListener('scroll', function() {
-  if (Date.now() - lastCall >= 100) {
-    watchFooter();
 
-    // Обновляем текущее время, в мс.
-    lastCall = Date.now();
+  if (timeout) {
+    setTimeout(function() {
+      watchFooter();
+      timeout = true;
+    }, 100);
   }
+
+  timeout = false;
 });
 
 /**
