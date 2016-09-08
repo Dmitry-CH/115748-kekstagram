@@ -79,7 +79,6 @@ var renderPictures = function(data) {
 
   // Сохраняем полученный список изображений в переменную.
   pictures = data;
-  console.log(pictures);
 
   // Перебираем список изображений и применяем шаблон.
   pictures.forEach(function(img) {
@@ -137,7 +136,7 @@ window.addEventListener('load', watchFooter);
 var lastCall = Date.now();
 
 window.addEventListener('scroll', function() {
-  if (Date.now() - lastCall >= 160) {
+  if (Date.now() - lastCall >= 100) {
     watchFooter();
 
     // Обновляем текущее время, в мс.
