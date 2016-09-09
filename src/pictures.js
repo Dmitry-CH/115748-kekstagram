@@ -17,6 +17,7 @@ var footer = document.querySelector('footer');
 var footerHeight = footer.offsetHeight;
 
 var pictures = [];
+var allPictures = [];
 
 // Задаем базовые настройки отображения списка изображений
 // для GET запроса.
@@ -79,6 +80,9 @@ var renderPictures = function(data) {
 
   // Сохраняем полученный список изображений в переменную.
   pictures = data;
+  // Собираем в один массив новые подргуженные изображения
+  // для передачи в объект gallery.
+  allPictures = allPictures.concat(data);
 
   // Перебираем список изображений и применяем шаблон.
   pictures.forEach(function(img) {
@@ -92,7 +96,7 @@ var renderPictures = function(data) {
   });
 
   // Передаем массив изображений.
-  gallery.setPictures(pictures);
+  gallery.setPictures(allPictures);
 
   // Показываем блок 'filters'.
   utility.toggleShowElement(true);
