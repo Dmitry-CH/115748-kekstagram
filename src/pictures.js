@@ -6,14 +6,68 @@ var load = require('./load');
 var Picture = require('./picture');
 var utility = require('./utility');
 
-var pictures = [];
-var nameCallback = 'jsonpCallback';
-
-// Ссылка на загрузку внешних данных.
-var url = 'http://localhost:1506/api/pictures';
+// Получаем элемент контейнер, filters.
+var filters = document.querySelector('.filters');
 
 // Получаем элемент контейнер, куда будем помещать сгенерированные элементы.
 var picturesContainer = document.querySelector('.pictures');
+
+// Получаем элемент, footer.
+var footer = document.querySelector('footer');
+var footerHeight = footer.offsetHeight;
+
+var pictures = [];
+var allPictures = [];
+
+// Задаем базовые настройки отображения списка изображений
+// для GET запроса.
+var pageNumber = 0;
+var pageSize = 12;
+var filterId = 'popular';
+
+/**
+ * Выполняет добавление индекса изображению.
+*/
+
+function addIndexPicture() {
+  var allPicture = picturesContainer.querySelectorAll('.picture');
+
+  allPicture.forEach(function(elm, i) {
+    elm.dataset.indeximg = i;
+  });
+}
+
+/**
+ * Проверяет виден ли footer, если да, то загружает следующую страницу.
+*/
+
+function watchFooter() {
+  if (footer.getBoundingClientRect().bottom - window.innerHeight <= footerHeight) {
+    pageNumber += 1;
+    loadPictures(filterId, pageNumber, pageSize);
+  }
+}
+
+/**
+ * Вызывает загрузку изображений.
+ * @param {string} filter
+ * @param {number} currentPageNumber
+*/
+
+var loadPictures = function(filter, currentPageNumber, currentpageSize) {
+  // Ссылка на загрузку внешних данных.
+  var url = 'http://localhost:1506/api/pictures';
+
+  // Параметры GET запроса.
+  var optionList = {
+    from: currentPageNumber * currentpageSize,
+    to: (currentPageNumber * currentpageSize) + currentpageSize,
+    filter: filter
+  };
+
+  // Выполняем XMLHttpRequest запрос на сервер.
+  load(url, optionList, renderPictures);
+};
 
 /**
  * Обрабатывает полученные данные с сервера.
@@ -26,21 +80,85 @@ var renderPictures = function(data) {
 
   // Сохраняем полученный список изображений в переменную.
   pictures = data;
+  // Собираем в один массив новые подргуженные изображения
+  // для передачи в объект gallery.
+  allPictures = allPictures.concat(data);
 
   // Перебираем список изображений и применяем шаблон.
-  pictures.forEach(function(img, i) {
-    var elementIMG = new Picture(img, i);
+  pictures.forEach(function(img) {
+    var elementIMG = new Picture(img);
 
     // Добавляем на страницу новый созданный элемент.
     picturesContainer.appendChild(elementIMG.element);
+
+    // Выполняем добавление индекса изображению.
+    addIndexPicture();
   });
 
   // Передаем массив изображений.
-  gallery.setPictures(pictures);
+  gallery.setPictures(allPictures);
 
   // Показываем блок 'filters'.
   utility.toggleShowElement(true);
 };
 
-// Выполняем JSONP запрос на сервер.
-load(url, renderPictures, nameCallback);
+/**
+ * Перерисовывает страницу с изображениями
+ * в зависимости от выбранного фильтра.
+*/
+
+var reloadPictures = function() {
+  // Получаем список элементов в контейнере picturesContainer.
+  var allPicture = picturesContainer.querySelectorAll('.picture');
+  var lengthAllPicture = allPicture.length;
+
+  // Удаляем все элементы из контейнера picturesContainer.
+  for (var i = 0; i < lengthAllPicture; i++) {
+    picturesContainer.removeChild(allPicture[i]);
+  }
+
+  // Обнуляем номер текущей страницы.
+  pageNumber = 0;
+
+  // Выполняем XMLHttpRequest запрос на сервер.
+  loadPictures(filterId, pageNumber, pageSize);
+
+  watchFooter();
+};
+
+/**
+ * Обработчик события onload, загрузки страницы целиком.
+*/
+
+window.addEventListener('load', watchFooter);
+
+/**
+ * Обработчик события scroll, загрузка новых страниц.
+ * Оптимизируем обработчик события scroll (throttle).
+*/
+
+var timeout = true;
+
+window.addEventListener('scroll', function() {
+
+  if (timeout) {
+    setTimeout(function() {
+      watchFooter();
+      timeout = true;
+    }, 100);
+  }
+
+  timeout = false;
+});
+
+/**
+ * Обработчик события change, выбор фильтра сортировки.
+*/
+
+filters.addEventListener('change', function(evt) {
+  filterId = evt.target.value;
+
+  reloadPictures();
+}, true);
+
+loadPictures(filterId, pageNumber, pageSize);
