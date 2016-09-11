@@ -75,9 +75,9 @@
    */
   function resizeFormIsValid() {
     var valueX = parseFloat(xInput.value) + parseFloat(sizeInput.value) <= currentResizer._image.naturalWidth
-                 && parseFloat(xInput.value) > 0;
+                 && parseFloat(xInput.value) >= 0;
     var valueY = parseFloat(yInput.value) + parseFloat(sizeInput.value) <= currentResizer._image.naturalHeight
-                 && parseFloat(yInput.value) > 0;
+                 && parseFloat(yInput.value) >= 0;
 
     if (xInput.value === '' || sizeInput.value === '' || yInput.value === '') {
       return false;
@@ -242,23 +242,24 @@
     var resizeWidth = currentResizer._image.naturalWidth;
     var resizeHeight = currentResizer._image.naturalHeight;
 
-    var maxInputX = resizeWidth - sizeInput.value;
-    var maxInputY = resizeHeight - sizeInput.value;
+    var maxInputX = (resizeWidth - sizeInput.value) > 0 ? (resizeWidth - sizeInput.value) : 0;
+    var maxInputY = (resizeHeight - sizeInput.value) > 0 ? (resizeHeight - sizeInput.value) : 0;
     // Определяем наименьшую сторону.
     var maxSize = resizeWidth > resizeHeight ? resizeHeight : resizeWidth;
 
+    // Проверяем поле "Слева".
     if (xInput.value < 0) {
       xInput.value = 0;
     }else if (xInput.value > maxInputX) {
       xInput.value = maxInputX;
     }
-
+    // Проверяем поле "Сверху".
     if (yInput.value < 0) {
       yInput.value = 0;
     }else if (yInput.value > maxInputY) {
       yInput.value = maxInputY;
     }
-
+    // Проверяем поле "Сторона".
     if (sizeInput.value < 0) {
       sizeInput.value = 0;
     }else if (sizeInput.value > maxSize) {
