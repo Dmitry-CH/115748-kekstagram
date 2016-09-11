@@ -30,9 +30,9 @@ var filterId = 'popular';
 */
 
 function addIndexPicture() {
-  var allPicture = picturesContainer.querySelectorAll('.picture');
+  var allElmPicture = picturesContainer.querySelectorAll('.picture');
 
-  allPicture.forEach(function(elm, i) {
+  [].forEach.call(allElmPicture, function(elm, i) {
     elm.dataset.indeximg = i;
   });
 }
@@ -90,10 +90,10 @@ var renderPictures = function(data) {
 
     // Добавляем на страницу новый созданный элемент.
     picturesContainer.appendChild(elementIMG.element);
-
-    // Выполняем добавление индекса изображению.
-    addIndexPicture();
   });
+
+  // Выполняем добавление индекса изображению.
+  addIndexPicture();
 
   // Передаем массив изображений.
   gallery.setPictures(allPictures);

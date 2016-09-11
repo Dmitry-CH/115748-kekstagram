@@ -74,10 +74,10 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    var valueX = +xInput.value + +sizeInput.value <= currentResizer._image.naturalWidth
-                 && +xInput.value > 0;
-    var valueY = +yInput.value + +sizeInput.value <= currentResizer._image.naturalHeight
-                 && +yInput.value > 0;
+    var valueX = parseFloat(xInput.value) + parseFloat(sizeInput.value) <= currentResizer._image.naturalWidth
+                 && parseFloat(xInput.value) > 0;
+    var valueY = parseFloat(yInput.value) + parseFloat(sizeInput.value) <= currentResizer._image.naturalHeight
+                 && parseFloat(yInput.value) > 0;
 
     if (xInput.value === '' || sizeInput.value === '' || yInput.value === '') {
       return false;
@@ -239,8 +239,13 @@
    */
 
   resizeForm.addEventListener('input', function() {
-    var maxInputX = currentResizer._image.naturalWidth - sizeInput.value;
-    var maxInputY = currentResizer._image.naturalHeight - sizeInput.value;
+    var resizeWidth = currentResizer._image.naturalWidth;
+    var resizeHeight = currentResizer._image.naturalHeight;
+
+    var maxInputX = resizeWidth - sizeInput.value;
+    var maxInputY = resizeHeight - sizeInput.value;
+    // Определяем наименьшую сторону.
+    var maxSize = resizeWidth > resizeHeight ? resizeHeight : resizeWidth;
 
     if (xInput.value < 0) {
       xInput.value = 0;
@@ -254,8 +259,14 @@
       yInput.value = maxInputY;
     }
 
+    if (sizeInput.value < 0) {
+      sizeInput.value = 0;
+    }else if (sizeInput.value > maxSize) {
+      sizeInput.value = maxSize;
+    }
+
     // Передаем в объект Resizer новые значения.
-    currentResizer.setConstraint(+xInput.value, +yInput.value, +sizeInput.value);
+    currentResizer.setConstraint(parseFloat(xInput.value), parseFloat(yInput.value), parseFloat(sizeInput.value));
 
     toggleFormSubmit();
   });
