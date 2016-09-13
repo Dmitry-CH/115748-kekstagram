@@ -23,7 +23,7 @@ var allPictures = [];
 // для GET запроса.
 var pageNumber = 0;
 var pageSize = 12;
-var filterId = 'popular';
+var filterId = localStorage.getItem('filter') || 'popular';
 
 /**
  * Выполняет добавление индекса изображению.
@@ -34,6 +34,20 @@ function addIndexPicture() {
 
   [].forEach.call(allElmPicture, function(elm, i) {
     elm.dataset.indeximg = i;
+  });
+}
+
+/**
+ * Устанавливает фильтр по умолчанию.
+*/
+
+function setCheckedFilters() {
+  var radioItem = filters.querySelectorAll('[type="radio"]');
+
+  [].forEach.call(radioItem, function(elm) {
+    if (elm.value === filterId) {
+      elm.checked = true;
+    }
   });
 }
 
@@ -119,6 +133,8 @@ var reloadPictures = function() {
 
   // Обнуляем номер текущей страницы.
   pageNumber = 0;
+  // Получаем новое значение из localStorage.
+  filterId = localStorage.getItem('filter') || 'popular';
 
   // Выполняем XMLHttpRequest запрос на сервер.
   loadPictures(filterId, pageNumber, pageSize);
@@ -156,9 +172,10 @@ window.addEventListener('scroll', function() {
 */
 
 filters.addEventListener('change', function(evt) {
-  filterId = evt.target.value;
+  localStorage.setItem('filter', evt.target.value);
 
   reloadPictures();
 }, true);
 
 loadPictures(filterId, pageNumber, pageSize);
+setCheckedFilters();
