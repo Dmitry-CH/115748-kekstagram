@@ -27,17 +27,17 @@ function createElement(obj) {
   var contentIMG = new Image(182, 182);
 
   // Обработчик загрузки изображения.
-  contentIMG.onload = function() {
+  contentIMG.addEventListener('load', function() {
     clearTimeout(imgLoadTimeout);
 
     // Заменяем текущий 'img' на новый из конструктора.
     element.replaceChild(contentIMG, element.querySelector('img'));
-  };
+  });
 
   // Обработчик ошибки сервера.
-  contentIMG.onerror = function() {
+  contentIMG.addEventListener('error', function() {
     element.classList.add('picture-load-failure');
-  };
+  });
 
   contentIMG.src = obj.url;
 
@@ -64,15 +64,18 @@ var Picture = function(data) {
   this.element = createElement(data);
 
   // Добовляем на изображение обработчик клика.
-  this.element.onclick = function(evt) {
-    evt.preventDefault();
-    gallery.show(evt.target.parentElement.dataset.indeximg);
-  };
+  this.onClick = this.onClick.bind(this);
+  this.element.addEventListener('click', this.onClick);
+};
 
+Picture.prototype.onClick = function(evt) {
+  evt.preventDefault();
+  gallery.show(evt.target.parentElement.dataset.indeximg);
+};
+
+Picture.prototype.remove = function() {
   // Удаляет обработчики событий.
-  this.remove = function() {
-    this.element.onclick = null;
-  };
+  this.element.removeEventListener('click', this.onClick);
 };
 
 // Экспортирую из модуля конструктор.

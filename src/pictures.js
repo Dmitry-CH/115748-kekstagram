@@ -70,7 +70,7 @@ function watchFooter() {
 
 var loadPictures = function(filter, currentPageNumber, currentpageSize) {
   // Ссылка на загрузку внешних данных.
-  var url = 'http://localhost:1506/api/pictures';
+  var url = '/api/pictures';
 
   // Параметры GET запроса.
   var optionList = {
@@ -123,12 +123,12 @@ var renderPictures = function(data) {
 
 var reloadPictures = function() {
   // Получаем список элементов в контейнере picturesContainer.
-  var allPicture = picturesContainer.querySelectorAll('.picture');
-  var lengthAllPicture = allPicture.length;
+  var allElmPicture = picturesContainer.querySelectorAll('.picture');
+  var lengthAllElmPicture = allElmPicture.length;
 
   // Удаляем все элементы из контейнера picturesContainer.
-  for (var i = 0; i < lengthAllPicture; i++) {
-    picturesContainer.removeChild(allPicture[i]);
+  for (var i = 0; i < lengthAllElmPicture; i++) {
+    picturesContainer.removeChild(allElmPicture[i]);
   }
 
   // Обнуляем номер текущей страницы.
@@ -174,6 +174,7 @@ window.addEventListener('scroll', function() {
 filters.addEventListener('change', function(evt) {
   localStorage.setItem('filter', evt.target.value);
 
+  allPictures = [];
   reloadPictures();
 }, true);
 

@@ -26,24 +26,21 @@ Gallery.prototype.setPictures = function(arrPictures) {
 };
 
 Gallery.prototype.show = function(number) {
-  // Сохраняем в переменную ссылку на текущий объект.
-  var self = this;
-
   // Добовляем обработчики событий.
   // Клик по 'Х', закрытие 'Gallery'.
   this.galleryClose.onclick = function() {
-    self.hide();
-  };
+    this.hide();
+  }.bind(this);
 
   // Клик по большому изображению, следующее изображение.
   this.galleryImage.onclick = function() {
 
-    if (self.activePicture < self.picturesLength - 1) {
-      self.setActivePicture(self.activePicture + 1);
+    if (this.activePicture < this.picturesLength - 1) {
+      this.setActivePicture(this.activePicture + 1);
     }else {
-      self.setActivePicture(0);
+      this.setActivePicture(0);
     }
-  };
+  }.bind(this);
 
   this.galleryContainer.classList.remove('invisible');
   this.setActivePicture(number);
