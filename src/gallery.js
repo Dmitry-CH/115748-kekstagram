@@ -26,28 +26,39 @@ Gallery.prototype.setPictures = function(arrPictures) {
 };
 
 Gallery.prototype.show = function(number) {
-  // Добовляем обработчики событий.
+  /**
+   * Добовляем обработчики событий.
+   */
+
+  // Обработчик адресной строки, запускает метод setActivePicture.
+  window.addEventListener('hashchange', this.setActivePicture(number));
+
   // Клик по 'Х', закрытие 'Gallery'.
-  this.galleryClose.onclick = function() {
+  var onGalleryClose = function() {
     this.hide();
-  }.bind(this);
+  };
+
+  this.galleryClose.onclick = onGalleryClose.bind(this);
 
   // Клик по большому изображению, следующее изображение.
-  this.galleryImage.onclick = function() {
+  var onGalleryImage = function() {
 
     if (this.activePicture < this.picturesLength - 1) {
       this.setActivePicture(this.activePicture + 1);
     }else {
       this.setActivePicture(0);
     }
-  }.bind(this);
+  };
+
+  this.galleryImage.onclick = onGalleryImage.bind(this);
 
   this.galleryContainer.classList.remove('invisible');
-  this.setActivePicture(number);
 };
 
 Gallery.prototype.hide = function() {
   this.galleryContainer.classList.add('invisible');
+
+  location.hash = '';
 
   // Удаляем обработчики событий.
   this.galleryClose.onclick = null;
@@ -55,7 +66,7 @@ Gallery.prototype.hide = function() {
 };
 
 Gallery.prototype.setActivePicture = function(number) {
-  this.activePicture = +number;
+  this.activePicture = parseFloat(number);
 
   this.galleryImage.src = this.pictures[this.activePicture].url;
 

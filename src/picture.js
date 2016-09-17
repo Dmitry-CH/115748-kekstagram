@@ -70,6 +70,8 @@ var Picture = function(data) {
 
 Picture.prototype.onClick = function(evt) {
   evt.preventDefault();
+  location.hash = 'photo/' + evt.target.getAttribute('src');
+
   gallery.show(evt.target.parentElement.dataset.indeximg);
 };
 
